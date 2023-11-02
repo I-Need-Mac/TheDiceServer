@@ -1,0 +1,34 @@
+version: "3.8"
+services:
+  mariadb:
+    image: 'mariadb:10.6'
+    environment:
+      - 'MARIADB_ROOT_PASSWORD='
+      - 'MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=true'
+      - 'MARIADB_USER=${MARIADB_USER}'
+      - 'MARIADB_PASSWORD=${MARIADB_PASS}'
+      - 'MARIADB_DATABASE=${MARIADB_DATABASE}'
+    ports:
+      - '3306:3306'
+    volumes:
+      - './conf.d/mariadb:/etc/mysql/mariadb.conf.d:ro'
+
+  prometheus:
+    image: 'prom/prometheus:v2.47.2'
+    ports:
+      - '9090:9090'
+    volumes:
+      - './conf.d/prometheus:/etc/prometheus:ro'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+  grafana:
+    image: 'grafana/grafana'
+    ports:
+      - '3000:3000'
+    volumes:
+      - './conf.d/grafana/jmx.yaml:/etc/grafana/provisioning/dashboards/jmx.yaml'
+      - './conf.d/grafana/prometheus.yaml:/etc/grafana/provisioning/datasources/prometheus.yaml'
+      - './conf.d/grafana/spring-boot.json:/var/lib/grafana/dashboards/spring-boot.json'
+    depends_on:
+      - prometheus
