@@ -1,4 +1,4 @@
-name: Build with Gradle
+name: Build and Deploy
 
 on:
   push:
@@ -28,8 +28,14 @@ jobs:
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: clean build
+          arguments: clean build --scan
 
       - name: Stop Docker containers
         if: always()
         run: docker-compose -f "compose.yaml" down
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifacts
+          path: build/libs/
