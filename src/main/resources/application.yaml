@@ -1,11 +1,19 @@
 spring:
   config:
     import: file:./.env[.properties]
+  sql:
+    init:
+      encoding: UTF-8
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://${MARIADB_HOST}/${MARIADB_DATABASE}
     username: ${MARIADB_USER}
     password: ${MARIADB_PASS}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: true
+    show-sql: true
 
 management:
   endpoint:
