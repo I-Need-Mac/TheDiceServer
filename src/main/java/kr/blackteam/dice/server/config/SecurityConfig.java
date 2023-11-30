@@ -1,4 +1,4 @@
-package kr.blackteam.dice.server.security;
+package kr.blackteam.dice.server.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,11 +13,18 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http.csrf(AbstractHttpConfigurer::disable).cors(AbstractHttpConfigurer::disable)
-        .formLogin(AbstractHttpConfigurer::disable).httpBasic(AbstractHttpConfigurer::disable)
-        .authorizeHttpRequests(authorize -> authorize.requestMatchers("/api/docs/**").permitAll()
-            .requestMatchers("/api/swagger-ui/**").permitAll().requestMatchers("/api/v1/**")
-            .permitAll().anyRequest().authenticated());
+    // @formatter:off
+    http.csrf(AbstractHttpConfigurer::disable)
+        .cors(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(auth ->
+            auth.requestMatchers("/api/swagger-ui/**").permitAll()
+                .requestMatchers("/api/docs/**").permitAll()
+                .requestMatchers("/api/actuator/prometheus").permitAll()
+                .requestMatchers("/api/v1/**").permitAll()
+                .anyRequest().authenticated()
+        )
+    ;
+    // @formatter:on
     return http.build();
   }
 
